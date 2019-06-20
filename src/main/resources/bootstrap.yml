@@ -1,0 +1,47 @@
+#设置服务端口
+server:
+  port: 9001
+#eureka服务注册中心的配置
+eureka:
+  client:
+    service-url:
+      #程序员DD公益Eureka注册中心(供写demo用)
+      defaultZone: http://eureka.didispace.com/eureka/
+#spring的配置
+spring:
+  application:
+    name: annotation-log-server
+  #数据库表版本控制flyway配置
+  flyway:
+    #开启flyway
+    enabled: true
+    #迁移非空模式时是否自动调用基线
+    baseline-on-migrate: true
+  profiles:
+    #据说是配置文件名,我们理解的是开发环境
+    active: dev
+  #数据库连接设置-------密码未做加密处理
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #必须设置相关的时区,否则使用mybatis-plus就报错
+    url: jdbc:mysql://localhost:3306/log_server?useSSL=false&serverTimezone=UTC
+    username: root
+    password: root
+  #SpringCloud的Stream整合Kafka的配置
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+      bindings:
+        #Stream内置的输出通道名称
+        output:
+          #设置Stream内置输入通道的传输的数据是json格式
+          content-type: application/json
+          #设置自定义的通道接口的输出通道的主题(需要对应的输入接口配置相同的主题去消费,
+          #当然了不一定用自定义接口的输入通道去消费,可以用其他的去消费)
+          destination: log-kafka-topic
+
+#日志文件配置(以文件的形式存储,而不是放到数据库里)
+logging:
+  file: log/${spring.application.name}.log
